@@ -1,0 +1,32 @@
+#https://github.com/stonith404/pingvin-share
+---
+version: '2.0'
+services:
+  pingvin-share:
+    image: stonith404/pingvin-share
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+profiles:
+  compute:
+    pingvin-share:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        pingvin-share:
+          denom: uakt
+          amount: 1000
+deployment:
+  pingvin-share:
+    dcloud:
+      profile: pingvin-share
+      count: 1
