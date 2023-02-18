@@ -1,0 +1,32 @@
+#https://github.com/joemccann/dillinger
+---
+version: '2.0'
+services:
+  dillinger:
+    image: 'lscr.io/linuxserver/dillinger:latest'
+    expose:
+      - port: 8080
+        as: 80
+        to:
+          - global: true
+profiles:
+  compute:
+    dillinger:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        dillinger:
+          denom: uakt
+          amount: 10000
+deployment:
+  dillinger:
+    dcloud:
+      profile: dillinger
+      count: 1
