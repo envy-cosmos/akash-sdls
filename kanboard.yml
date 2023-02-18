@@ -1,0 +1,32 @@
+#https://kanboard.org/
+---
+version: '2.0'
+services:
+  kanboard:
+    image: 'kanboard/kanboard:latest'
+    expose:
+      - port: 80
+        as: 80
+        to:
+          - global: true
+profiles:
+  compute:
+    kanboard:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        kanboard:
+          denom: uakt
+          amount: 1000
+deployment:
+  kanboard:
+    dcloud:
+      profile: kanboard
+      count: 1
