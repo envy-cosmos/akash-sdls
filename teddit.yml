@@ -1,0 +1,73 @@
+#https://codeberg.org/teddit/teddit
+---
+version: '2.0'
+services:
+  teddit-redis:
+    image: 'redis:6.2.5-alpine'
+    expose:
+      - port: 6379
+        as: 6379
+        to:
+          - global: false
+          - service: teddit
+    command:
+      - redis-server
+    args:
+      - ''
+    env:
+      - REDIS_REPLICATION_MODE=master
+  teddit:
+    image: 'teddit/teddit:latest'
+    expose:
+      - port: 8080
+        as: 80
+        to:
+          - global: true
+    env:
+      - THEME=dark
+      - USE_HELMET=true
+      - USE_HELMET_HSTS=true
+      - TRUST_PROXY=true
+      - NSFW_ENABLED=false
+      - POST_COMMENTS_SORT=top
+      - CACHE_CONTROL=true
+      - CACHE_MAX_SIZE=10000
+      - REDIS_HOST=teddit-redis
+      - CLEAN_HOMEPAGE=true
+      - 'SUGGESTED_SUBREDDITS=["Saved", "Popular", "akashnetwork"]'
+profiles:
+  compute:
+    teddit-redis:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+    teddit:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        teddit-redis:
+          denom: uakt
+          amount: 10000
+        teddit:
+          denom: uakt
+          amount: 10000
+deployment:
+  teddit-redis:
+    dcloud:
+      profile: teddit-redis
+      count: 1
+  teddit:
+    dcloud:
+      profile: teddit
+      count: 1
