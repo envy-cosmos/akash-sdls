@@ -1,0 +1,38 @@
+---
+version: '2.0'
+services:
+  libreddit:
+    image: 'spikecodes/libreddit:latest'
+    env:
+      - "LIBREDDIT_DEFAULT_THEME=dark"
+      - "LIBREDDIT_DEFAULT_LAYOUT=compact"
+      - "LIBREDDIT_DEFAULT_COMMENT_SORT=top"
+      - "LIBREDDIT_DEFAULT_POST_SORT=top"
+      - "LIBREDDIT_DEFAULT_SHOW_NSFW=off"
+      - "LIBREDDIT_DEFAULT_USE_HLS=on"
+    expose:
+      - port: 8080
+        as: 80
+        to:
+          - global: true
+profiles:
+  compute:
+    libreddit:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        libreddit:
+          denom: uakt
+          amount: 10000
+deployment:
+  libreddit:
+    dcloud:
+      profile: libreddit
+      count: 1
