@@ -1,0 +1,32 @@
+#https://github.com/Cveinnt/LetsMarkdown.com
+---
+version: '2.0'
+services:
+  letsmarkdown:
+    image: cveinnt/letsmarkdown
+    expose:
+      - port: 3030
+        as: 80
+        to:
+          - global: true
+profiles:
+  compute:
+    letsmarkdown:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        letsmarkdown:
+          denom: uakt
+          amount: 1000
+deployment:
+  letsmarkdown:
+    dcloud:
+      profile: letsmarkdown
+      count: 1
