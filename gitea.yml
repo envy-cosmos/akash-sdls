@@ -1,0 +1,87 @@
+---
+version: '2.0'
+services:
+  db:
+    image: 'postgres:14.5'
+    expose:
+      - port: 5432
+        to:
+          - global: false
+          - service: server
+    command:
+      - sh
+      - '-c'
+    args:
+      - >-
+        rmdir -v /var/lib/postgresql/data/lost+found >/dev/null 2>&1; exec
+        /usr/local/bin/docker-entrypoint.sh postgres
+    env:
+      - POSTGRES_USER=gitea
+      - POSTGRES_PASSWORD=gitea
+      - POSTGRES_DB=gitea
+    params:
+      storage:
+        data:
+          mount: /var/lib/postgresql/data
+          readOnly: false
+  server:
+    image: 'gitea/gitea:latest'
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+      - port: 222
+        as: 22
+        proto: tcp
+        to:
+          - global: true
+    env:
+      - USER_UID=1000
+      - USER_GID=1000
+      - GITEA__database__DB_TYPE=postgres
+      - 'GITEA__database__HOST=db:5432'
+      - GITEA__database__NAME=gitea
+      - GITEA__database__USER=gitea
+      - GITEA__database__PASSWD=gitea
+profiles:
+  compute:
+    db:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 16Mi
+          - name: data
+            size: 512Mi
+            attributes:
+              persistent: true
+              class: beta3
+    server:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        db:
+          denom: uakt
+          amount: 10000
+        server:
+          denom: uakt
+          amount: 10000
+deployment:
+  db:
+    dcloud:
+      profile: db
+      count: 1
+  server:
+    dcloud:
+      profile: server
+      count: 1
