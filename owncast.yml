@@ -1,0 +1,36 @@
+#https://owncast.online/docs/
+---
+version: '2.0'
+services:
+  owncast:
+    image: 'gabekangas/owncast:latest'
+    expose:
+      - port: 8080
+        as: 80
+        to:
+          - global: true
+      - port: 1935
+        as: 1935
+        to:
+          - global: true
+profiles:
+  compute:
+    owncast:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        owncast:
+          denom: uakt
+          amount: 1000
+deployment:
+  owncast:
+    dcloud:
+      profile: owncast
+      count: 1
