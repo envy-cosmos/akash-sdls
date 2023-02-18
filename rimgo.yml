@@ -1,0 +1,44 @@
+#https://codeberg.org/video-prize-ranch/rimgo
+---
+version: "2.0"
+
+services:
+  rimgo:
+    image: quay.io/pussthecatorg/rimgo:latest
+    env:
+      - PORT=3000
+      - ADDRESS=0.0.0.0
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+
+profiles:
+  compute:
+    rimgo:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 256Mi
+        storage:
+          size: 256Mi
+
+  placement:
+    akash:
+      attributes:
+        host: akash
+      signedBy:
+        anyOf:
+          - "akash1365yvmc4s7awdyj3n2sav7xfx76adc6dnmlx63"
+      pricing:
+        rimgo: 
+          denom: uakt
+          amount: 10000
+
+deployment:
+  rimgo:
+    akash:
+      profile: rimgo
+      count: 1
