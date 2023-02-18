@@ -1,0 +1,37 @@
+#https://github.com/thedaviddelta/lingva-translate
+---
+version: '2.0'
+services:
+  lingva:
+    image: 'thedaviddelta/lingva-translate:latest'
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+    env:
+      - "site_domain=lingva.ml"
+      - "force_default_theme=dark"
+      - "default_source_lang=auto"
+      - "default_target_lang=en"
+profiles:
+  compute:
+    lingva:
+      resources:
+        cpu:
+          units: 1.0
+        memory:
+          size: 1Gi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        lingva:
+          denom: uakt
+          amount: 10000
+deployment:
+  lingva:
+    dcloud:
+      profile: lingva
+      count: 1
