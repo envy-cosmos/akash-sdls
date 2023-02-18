@@ -1,0 +1,32 @@
+#https://github.com/linuxserver/docker-dokuwiki
+---
+version: '2.0'
+services:
+  dokuwiki:
+    image: 'lscr.io/linuxserver/dokuwiki:latest'
+    expose:
+      - port: 80
+        as: 80
+        to:
+          - global: true
+profiles:
+  compute:
+    dokuwiki:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        dokuwiki:
+          denom: uakt
+          amount: 10000
+deployment:
+  dokuwiki:
+    dcloud:
+      profile: dokuwiki
+      count: 1
