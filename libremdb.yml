@@ -1,0 +1,44 @@
+#https://github.com/zyachel/libremdb
+---
+version: '2.0'
+services:
+  libremdb:
+    image: 'quay.io/pussthecatorg/libremdb:latest'
+    expose:
+      - port: 3000
+        as: 80
+        accept:
+          - imdb.site.tld
+        to:
+          - global: true
+    env:
+      - PORT=3000
+      - 'URL=http://localhost:3000'
+      - NODE_ENV=production
+      - IMAGE_QUALITY=500
+profiles:
+  compute:
+    libremdb:
+      resources:
+        cpu:
+          units: 0.4
+        memory:
+          size: 512Mi
+        storage:
+          - size: 256Mi
+  placement:
+    akash:
+      pricing:
+        libremdb:
+          denom: uakt
+          amount: 10000
+      signedBy:
+        anyOf:
+          - akash1365yvmc4s7awdyj3n2sav7xfx76adc6dnmlx63
+      attributes:
+        host: akash
+deployment:
+  libremdb:
+    akash:
+      profile: libremdb
+      count: 1
