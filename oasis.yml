@@ -1,0 +1,42 @@
+#https://github.com/machengim/oasis
+---
+version: '2.0'
+services:
+  oasis:
+    image: machengim/oasis
+    expose:
+      - port: 8000
+        as: 80
+        to:
+          - global: true
+    params:
+      storage:
+        storage:
+          mount: /home/storage
+          readOnly: false
+profiles:
+  compute:
+    oasis:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 1Gi
+          - name: storage
+            size: 10Gi
+            attributes:
+              persistent: true
+              class: beta2
+  placement:
+    dcloud:
+      pricing:
+        oasis:
+          denom: uakt
+          amount: 1000
+deployment:
+  oasis:
+    dcloud:
+      profile: oasis
+      count: 1
