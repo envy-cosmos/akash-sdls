@@ -1,0 +1,32 @@
+#https://codeberg.org/librarian/librarian
+---
+version: '2.0'
+services:
+  librarian:
+    image: 'codeberg.org/librarian/librarian:latest'
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+profiles:
+  compute:
+    librarian:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        librarian:
+          denom: uakt
+          amount: 10000
+deployment:
+  librarian:
+    dcloud:
+      profile: librarian
+      count: 1
