@@ -1,0 +1,62 @@
+---
+version: '2.0'
+services:
+  ethercalc:
+    image: 'audreyt/ethercalc:latest'
+    expose:
+      - port: 8000
+        as: 80
+        to:
+          - global: true
+    env:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  redis:
+    image: 'redis:latest'
+    expose:
+      - port: 6379
+        as: 6379
+        proto: tcp
+        to:
+          - global: false
+          - service: ethercalc
+    command:
+      - redis-server
+    args:
+      - ''
+profiles:
+  compute:
+    ethercalc:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+    redis:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        ethercalc:
+          denom: uakt
+          amount: 10000
+        redis:
+          denom: uakt
+          amount: 10000
+deployment:
+  ethercalc:
+    dcloud:
+      profile: ethercalc
+      count: 1
+  redis:
+    dcloud:
+      profile: redis
+      count: 1
