@@ -1,0 +1,43 @@
+#https://github.com/jgraph/drawio
+---
+version: '2.0'
+services:
+  drawio:
+    image: jgraph/drawio
+    expose:
+      - port: 8080
+        as: 80
+        to:
+          - global: true
+      - port: 8443
+        as: 8443
+        to:
+          - global: true
+    env:
+      - PUBLIC_DNS=domain
+      - ORGANISATION_UNIT=unit
+      - ORGANISATION=org
+      - CITY=city
+      - STATE=state
+      - COUNTRY_CODE=country
+profiles:
+  compute:
+    drawio:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 512Mi
+  placement:
+    dcloud:
+      pricing:
+        drawio:
+          denom: uakt
+          amount: 1000
+deployment:
+  drawio:
+    dcloud:
+      profile: drawio
+      count: 1
