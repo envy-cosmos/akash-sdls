@@ -1,0 +1,42 @@
+#https://github.com/gitpod-io/openvscode-server
+---
+version: '2.0'
+services:
+  openvscode:
+    image: gitpod/openvscode-server
+    expose:
+      - port: 3000
+        as: 80
+        to:
+          - global: true
+    params:
+      storage:
+        data:
+          mount: '/home/workspace:cached'
+          readOnly: false
+profiles:
+  compute:
+    openvscode:
+      resources:
+        cpu:
+          units: 0.5
+        memory:
+          size: 512Mi
+        storage:
+          - size: 1Gi
+          - name: data
+            size: 10Gi
+            attributes:
+              persistent: true
+              class: beta2
+  placement:
+    dcloud:
+      pricing:
+        openvscode:
+          denom: uakt
+          amount: 1000
+deployment:
+  openvscode:
+    dcloud:
+      profile: openvscode
+      count: 1
